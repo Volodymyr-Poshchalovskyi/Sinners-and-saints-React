@@ -68,16 +68,15 @@ export default function Header() {
       >
         {/* Верхня частина з фіксованою висотою */}
         <div
-          className={`w-full relative px-8 flex justify-center items-center transition-all duration-300 ${
-            isNavVisible ? 'h-24' : 'h-16'
-          }`}
+          // **ЗМІНА ТУТ: Встановлюємо постійну висоту h-16 (64px)**
+          className="w-full relative px-8 flex justify-center items-center transition-all duration-300 h-16"
         >
           <div className="flex justify-center items-center h-full">
             <Link to="/" className="flex items-center h-full">
               <img
                 src={sinnersLogo}
                 alt="Sinners and Saints Logo"
-                className="w-40 h-auto filter brightness-0"
+                className="w-32 h-auto filter brightness-0"
               />
             </Link>
           </div>
@@ -101,7 +100,7 @@ export default function Header() {
         {/* Навігація */}
         <nav
           className={`w-full flex justify-center transition-all duration-300 ease-in-out overflow-hidden ${
-            isNavVisible ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
+            isNavVisible ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'
           }`}
           onMouseLeave={handleNavMouseLeave}
         >
