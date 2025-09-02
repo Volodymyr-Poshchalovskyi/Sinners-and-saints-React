@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
+// Спільна конфігурація анімації для синхронізації
+const fadeAnimation = {
+  duration: 0.8,
+  ease: "easeInOut"
+};
+
 export default function PreloaderBanner({ title, description, onAnimationComplete }) {
   const titleWords = title ? title.split(' ') : [];
   const descriptionWords = description ? description.split(' ') : [];
-
-  // Стан для запуску анімації зникнення всього банера
   const [startFadeOut, setStartFadeOut] = useState(false);
-  // Стан для повного видалення компонента з DOM після анімації
   const [isUnmounted, setIsUnmounted] = useState(false);
 
   const titleContainerVariants = {
@@ -25,15 +28,12 @@ export default function PreloaderBanner({ title, description, onAnimationComplet
     visible: { opacity: 1, transition: { duration: 0.5 } },
   };
 
-  // Функція, яка запускається після завершення анімації тексту
   const handleTextAnimationComplete = () => {
-    // Встановлюємо таймер на 4 секунди перед початком зникнення
     setTimeout(() => {
       setStartFadeOut(true);
-    }, 4000);
+    }, 4000); // Затримка перед зникненням
   };
 
-  // Якщо компонент має бути видалений, повертаємо null
   if (isUnmounted) {
     return null;
   }
@@ -41,17 +41,14 @@ export default function PreloaderBanner({ title, description, onAnimationComplet
   return (
     <motion.div 
       className="fixed bottom-0 left-0 right-0 h-40 bg-white z-50 flex flex-col items-center justify-center p-4"
-      // Початкова анімація не потрібна, банер одразу видимий
       initial={{ opacity: 1 }}
-      // Анімуємо прозорість до 0, коли `startFadeOut` стає true
       animate={{ opacity: startFadeOut ? 0 : 1 }}
-      transition={{ duration: 1 }} // Тривалість анімації зникнення
-      // Ця функція викликається після завершення анімації зникнення
+      transition={fadeAnimation}
       onAnimationComplete={() => {
         if (startFadeOut) {
-          setIsUnmounted(true); // Встановлюємо стан для видалення компонента
+          setIsUnmounted(true);
           if (onAnimationComplete) {
-            onAnimationComplete(); // Викликаємо батьківську функцію, якщо вона є
+            onAnimationComplete();
           }
         }
       }}
@@ -68,13 +65,11 @@ export default function PreloaderBanner({ title, description, onAnimationComplet
           </motion.span>
         ))}
       </motion.h1>
-
       <motion.p 
         className="font-chanel text-gray-700 text-base text-center max-w-5xl mt-4"
         variants={descriptionContainerVariants}
         initial="hidden"
         animate="visible"
-        // Після завершення анімації опису викликаємо нашу функцію-тригер
         onAnimationComplete={handleTextAnimationComplete}
       >
         {descriptionWords.map((word, index) => (
