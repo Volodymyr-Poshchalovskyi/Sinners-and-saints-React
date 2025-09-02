@@ -30,18 +30,21 @@ export default function Header() {
   const [isHovered, setIsHovered] = useState(false);
   const { isPreloaderActive } = useAnimation();
   const location = useLocation();
-  const isDirectorsPage = location.pathname === '/directors';
 
-  // 1. Додаємо стан для стилів індикатора
+  // 1. Нова змінна для перевірки шляху
+  const isSpecialPage = location.pathname === '/' || location.pathname.startsWith('/directors/');
+
+  // 2. Оновлена умова для видимості хедера
+  const isVisible = isHovered || isSpecialPage || (location.pathname === '/directors' && isPreloaderActive);
+  
+  // 3. Додаємо стан для стилів індикатора
   const [indicatorStyle, setIndicatorStyle] = useState({
     opacity: 0,
     left: 0,
     width: 0,
   });
 
-  const isVisible = (isDirectorsPage && isPreloaderActive) || isHovered;
-  
-  // 2. Функції для обробки наведення миші
+  // 4. Функції для обробки наведення миші
   const handleLinkMouseEnter = (e) => {
     const linkElement = e.currentTarget;
     setIndicatorStyle({
@@ -85,7 +88,7 @@ export default function Header() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            // 3. Додаємо обробник, щоб ховати індикатор, коли миша йде з навігації
+            // 5. Додаємо обробник, щоб ховати індикатор, коли миша йде з навігації
             onMouseLeave={handleNavMouseLeave}
           >
             {/* Додаємо 'relative', щоб позиціонувати індикатор відносно цього блоку */}
@@ -94,14 +97,14 @@ export default function Header() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  // 4. Додаємо обробник на кожне посилання
+                  // 6. Додаємо обробник на кожне посилання
                   onMouseEnter={handleLinkMouseEnter}
                   className="py-2 px-3 text-xs font-semibold uppercase tracking-[0.15em] text-black"
                 >
                   {link.label}
                 </Link>
               ))}
-              {/* 5. Сам елемент індикатора */}
+              {/* 7. Сам елемент індикатора */}
               <div
                 className="absolute bottom-0 h-[3px] bg-black"
                 style={{
