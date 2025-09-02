@@ -1,6 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap');
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
 
 /* 1. Імпортуємо всі потрібні шрифти */
 /* 'helvetica' - потрібно додати цей файл в assets/fonts/ */
@@ -96,3 +102,4 @@ body {
   transform: scaleX(1.1);
   transform-origin: center center;
 }
+

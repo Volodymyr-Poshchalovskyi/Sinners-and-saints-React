@@ -1,3 +1,5 @@
+// src/Components/PreloaderBanner.js
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
@@ -31,7 +33,7 @@ export default function PreloaderBanner({ title, description, onAnimationComplet
   const handleTextAnimationComplete = () => {
     setTimeout(() => {
       setStartFadeOut(true);
-    }, 2000); // Затримка перед зникненням зменшена на 2 секунди (було 4000)
+    }, 2000); // Змінено на 2000 мс
   };
 
   if (isUnmounted) {
@@ -39,7 +41,7 @@ export default function PreloaderBanner({ title, description, onAnimationComplet
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="fixed bottom-0 left-0 right-0 h-40 bg-white z-50 flex flex-col items-start justify-center p-4"
       initial={{ opacity: 1 }}
       animate={{ opacity: startFadeOut ? 0 : 1 }}
@@ -53,7 +55,7 @@ export default function PreloaderBanner({ title, description, onAnimationComplet
         }
       }}
     >
-      <motion.h1 
+      <motion.h1
         className="font-chanel font-semibold text-black text-2xl md:text-4xl uppercase"
         variants={titleContainerVariants}
         initial="hidden"
@@ -65,19 +67,20 @@ export default function PreloaderBanner({ title, description, onAnimationComplet
           </motion.span>
         ))}
       </motion.h1>
-      <motion.p 
-        className="font-chanel text-gray-700 text-base max-w-5xl mt-4"
-        variants={descriptionContainerVariants}
-        initial="hidden"
-        animate="visible"
-        onAnimationComplete={handleTextAnimationComplete}
-      >
-        {descriptionWords.map((word, index) => (
-          <motion.span key={index} variants={wordVariants} className="inline-block mr-2">
-            {word}
-          </motion.span>
-        ))}
-      </motion.p>
+      <motion.p
+  className="font-montserrat text-gray-700 text-base max-w-5xl mt-4 normal-case"
+  variants={descriptionContainerVariants}
+  initial="hidden"
+  animate="visible"
+  onAnimationComplete={handleTextAnimationComplete}
+>
+  {descriptionWords.map((word, index) => (
+    <motion.span key={index} variants={wordVariants} className="inline-block mr-2">
+      {word}
+    </motion.span>
+  ))}
+</motion.p>
+
     </motion.div>
   );
 }

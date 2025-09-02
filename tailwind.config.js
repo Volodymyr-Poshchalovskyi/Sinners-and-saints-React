@@ -1,5 +1,4 @@
 // tailwind.config.js
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -9,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // 'ABChanel Corpo' - це та сама назва, що й у font-family в CSS
-        sans: ['ABChanel Corpo', 'sans-serif'],
+        sans: ['ABChanel Corpo', 'sans-serif'], // лишаєш для body
+        montserrat: ['Montserrat', 'sans-serif'], // додаєш Montserrat
       },
     },
   },
