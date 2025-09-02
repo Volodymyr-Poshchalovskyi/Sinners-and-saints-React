@@ -15,3 +15,15 @@
 .scroll-snap-enabled {
     @apply snap-y snap-proximity;
 }
+
+/* index.css або main.css */
+
+.expanded-text {
+  transform: scaleX(1.15); /* Збільшено з 1.05 до 1.15 */
+  transform-origin: center center;
+}
+
+.expanded-subtitle {
+  transform: scaleX(1.1); /* Збільшено з 1.03 до 1.1 */
+  transform-origin: center center;
+}

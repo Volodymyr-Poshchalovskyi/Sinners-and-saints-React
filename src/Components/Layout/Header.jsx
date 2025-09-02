@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import sinnersLogo from '../../assets/Logo/Sinners logo black.png';
+// 1. Імпортуємо useLocation для визначення поточного URL
+import { Link, useLocation } from 'react-router-dom';
+import sinnersLogoBlack from '../../assets/Logo/Sinners logo black.png';
+import sinnersLogoWhite from '../../assets/Logo/Sinners logo white.png';
 
 const navLinks = [
   { path: '/directors', label: 'Directors' },
@@ -19,34 +21,34 @@ export default function Header() {
   const lastScrollY = useRef(0);
 
   const [indicatorStyle, setIndicatorStyle] = useState({
-    opacity: 0,
-    left: 0,
-    width: 0,
+    opacity: 0, left: 0, width: 0,
   });
+
+  // 2. Визначаємо поточний маршрут
+  const location = useLocation();
+  const isMainPage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-        setIsNavVisible(false);
-      } else {
+      // 3. Ігноруємо логіку ховання хедера, якщо ми на головній сторінці
+      if (isMainPage) {
         setIsNavVisible(true);
+        return;
       }
-
+      
+      const currentScrollY = window.scrollY;
+      setIsNavVisible(currentScrollY < lastScrollY.current || currentScrollY < 100);
       lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMainPage]); // Додаємо isMainPage в залежності, щоб ефект оновлювався при зміні сторінки
 
   const handleLinkMouseEnter = (e) => {
     const linkElement = e.currentTarget;
     setIndicatorStyle({
-      opacity: 1,
-      left: linkElement.offsetLeft,
-      width: linkElement.offsetWidth,
+      opacity: 1, left: linkElement.offsetLeft, width: linkElement.offsetWidth,
     });
   };
 
@@ -54,29 +56,28 @@ export default function Header() {
     setIndicatorStyle((prevStyle) => ({ ...prevStyle, opacity: 0 }));
   };
 
+  // 4. Головна логіка видимості: якщо це головна сторінка - хедер ЗАВЖДИ видимий.
+  // В іншому випадку - залежить від скролу або наведення миші.
+  const isHeaderVisible = isMainPage ? true : isNavVisible || isHeaderHovered;
+
   return (
     <header
       className="fixed top-0 left-0 w-full z-[1000]"
       onMouseEnter={() => setIsHeaderHovered(true)}
       onMouseLeave={() => setIsHeaderHovered(false)}
     >
-      {/* Контейнер хедера */}
       <div
         className={`relative z-20 transition-colors duration-200 ${
-          isHeaderHovered ? 'bg-white shadow-sm' : 'bg-transparent'
+          isHeaderVisible ? 'bg-white shadow-sm' : 'bg-transparent'
         }`}
       >
-        {/* Верхня частина з фіксованою висотою */}
-        <div
-          // **ЗМІНА ТУТ: Встановлюємо постійну висоту h-16 (64px)**
-          className="w-full relative px-8 flex justify-center items-center transition-all duration-300 h-16"
-        >
+        <div className="w-full relative px-8 flex justify-center items-center transition-all duration-300 h-16">
           <div className="flex justify-center items-center h-full">
             <Link to="/" className="flex items-center h-full">
               <img
-                src={sinnersLogo}
+                src={isHeaderVisible ? sinnersLogoBlack : sinnersLogoWhite}
                 alt="Sinners and Saints Logo"
-                className="w-32 h-auto filter brightness-0"
+                className="w-32 h-auto transition-all duration-300"
               />
             </Link>
           </div>
@@ -85,9 +86,7 @@ export default function Header() {
               to="/login"
               aria-label="Login"
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-200 ${
-                isHeaderHovered
-                  ? 'text-black hover:bg-gray-100'
-                  : 'text-white/80 hover:text-white'
+                isHeaderVisible ? 'text-black hover:bg-gray-100' : 'text-white/80 hover:text-white'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -97,10 +96,10 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Навігація */}
         <nav
           className={`w-full flex justify-center transition-all duration-300 ease-in-out overflow-hidden ${
-            isNavVisible ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'
+             // На головній сторінці навігація також завжди видима
+            isNavVisible || isMainPage ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'
           }`}
           onMouseLeave={handleNavMouseLeave}
         >
@@ -110,10 +109,8 @@ export default function Header() {
                 key={link.path}
                 to={link.path}
                 onMouseEnter={handleLinkMouseEnter}
-                className={`py-2 px-3 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-200 ${
-                  isHeaderHovered
-                    ? 'text-black opacity-100'
-                    : 'text-white opacity-0 pointer-events-none'
+                className={`py-2 px-3 text-xs font-semibold uppercase tracking-[0.15em] transition-opacity duration-200 ${
+                  isHeaderVisible ? 'text-black opacity-100' : 'text-white opacity-0 pointer-events-none'
                 }`}
               >
                 {link.label}
@@ -123,7 +120,7 @@ export default function Header() {
               className="absolute bottom-0 h-[3px] bg-black"
               style={{
                 ...indicatorStyle,
-                opacity: isHeaderHovered ? indicatorStyle.opacity : 0,
+                opacity: isHeaderVisible ? indicatorStyle.opacity : 0,
                 transition: 'all 0.2s ease-in-out',
               }}
             />
