@@ -1,3 +1,5 @@
+// src/pages/Directors.js
+
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -5,7 +7,7 @@ import VideoContainer from '../Components/VideoContainer';
 import PreloaderBanner from '../Components/PreloaderBanner';
 import ScrollProgressBar from '../Components/ScrollProgressBar';
 import { useAnimation } from '../context/AnimationContext';
-import { directorsData } from '../Data/DirectorsData'; // Перевірте правильність цього шляху
+import { directorsData } from '../Data/DirectorsData';
 
 const nameAnimation = {
   hidden: { opacity: 0, y: 30 },
@@ -66,9 +68,11 @@ function Directors() {
 
       {directorsData.map((director, index) => (
         <div key={director.name} className="relative w-full h-screen snap-start">
-          
-          {/* 👇 ОСЬ ВИПРАВЛЕННЯ: Беремо перше відео з масиву 'videos' */}
-          <VideoContainer videoSrc={director.videos[0].src} />
+          <VideoContainer
+            videoSrc={director.videos[0].src}
+            // Вимикаємо відтворення всіх відео, крім поточного, щоб підвищити продуктивність
+            shouldPlay={!isPreloaderActive && currentIndex === index}
+          />
 
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-end p-4">
             <Link to={`/directors/${director.slug}`} className="text-center">

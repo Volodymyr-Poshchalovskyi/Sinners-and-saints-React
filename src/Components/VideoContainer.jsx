@@ -1,19 +1,33 @@
-import React from 'react';
+// src/Components/VideoContainer.js
 
-const VideoContainer = ({ videoSrc, videoType = 'video/mp4' }) => {
+import React, { useRef, useEffect } from 'react';
+
+const VideoContainer = ({ videoSrc, shouldPlay }) => {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (shouldPlay) {
+        // Запускаємо відтворення, якщо shouldPlay є true
+        // Використовуємо .catch() для обробки можливих помилок, наприклад, через політику браузера щодо автозапуску
+        videoRef.current.play().catch(e => console.error("Video playback error:", e));
+      } else {
+        // Ставимо на паузу, якщо shouldPlay є false
+        videoRef.current.pause();
+      }
+    }
+  }, [shouldPlay]); // Цей ефект спрацьовує лише коли змінюється shouldPlay
+
   return (
-    // Змінено 'fixed' на 'absolute' і прибрано '-z-10'
-    <div className="absolute top-0 left-0 w-full h-full z-0">
+    <div className="absolute inset-0 w-full h-full overflow-hidden">
       <video
-        autoPlay
-        loop
+        ref={videoRef}
+        src={videoSrc}
+        className="w-full h-full object-cover"
         muted
-        playsInline // Покращує роботу на мобільних
-        className="object-cover w-full h-full"
-      >
-        <source src={videoSrc} type={videoType} />
-        Ваш браузер не підтримує тег video.
-      </video>
+        loop
+        playsInline
+      />
     </div>
   );
 };
