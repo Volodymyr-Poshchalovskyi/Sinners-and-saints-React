@@ -8,16 +8,16 @@ export default function Layout({ children }) {
   // 1. Get the current location object
   const location = useLocation();
 
-  // 2. Check if the current path is the main page ('/')
-  const isMainPage = location.pathname === '/';
+  // 2. Check if the current path is the main page ('/') OR the login page ('/login')
+  const shouldHideFooter = location.pathname === '/' || location.pathname === '/login';
 
   return (
     <div className="min-h-screen dark:bg-gray-900 text-black dark:text-white">
       <Header />
       <main>{children}</main>
       
-      {/* 3. Render the Footer only if it's NOT the main page */}
-      {!isMainPage && <Footer />}
+      {/* 3. Render the Footer only if it's NOT the main page and NOT the login page */}
+      {!shouldHideFooter && <Footer />}
     </div>
   );
 }

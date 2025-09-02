@@ -31,7 +31,7 @@ export default function Header() {
   const { isPreloaderActive } = useAnimation();
   const location = useLocation();
 
-  const isSpecialPage = location.pathname === '/' || location.pathname.startsWith('/directors/');
+  const isSpecialPage = location.pathname === '/' || location.pathname.startsWith('/directors/') || location.pathname === '/login';
 
   const isVisible = isHovered || isSpecialPage || (location.pathname === '/directors' && isPreloaderActive);
   
