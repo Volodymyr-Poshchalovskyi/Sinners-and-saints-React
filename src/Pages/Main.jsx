@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import VideoContainer from "../Components/VideoContainer";
 
 function Main() {
   const videoPath = "/video/SHOWREEL SINNERS AND SAINTS 2024_1.mp4";
+
+  // Додано стан та референс
+  const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
+  const videoSectionRef = useRef(null);
 
   const titleLines = [
     ["WHERE", "CULTURE,", "COMMERCE"],
@@ -31,9 +35,35 @@ function Main() {
 
   const titleWordCount = titleLines.reduce((acc, line) => acc + line.length, 0);
 
+  // Додано useEffect для Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShouldPlayVideo(entry.isIntersecting);
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5,
+      }
+    );
+
+    if (videoSectionRef.current) {
+      observer.observe(videoSectionRef.current);
+    }
+
+    return () => {
+      if (videoSectionRef.current) {
+        observer.unobserve(videoSectionRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className="relative w-full h-screen text-white">
-      <VideoContainer videoSrc={videoPath} />
+    // Додано ref до батьківського div
+    <div className="relative w-full h-screen text-white" ref={videoSectionRef}>
+      {/* Передаємо пропс shouldPlay */}
+      <VideoContainer videoSrc={videoPath} shouldPlay={shouldPlayVideo} />
 
       {/* Змінено класи для правильного вертикального центрування */}
       <div className="absolute top-[140px] bottom-0 left-0 right-0 z-10 flex flex-col items-center justify-center text-center px-4">
