@@ -1,94 +1,151 @@
 import React from 'react';
-import sinnersLogo from '../../assets/Logo/Sinners logo white.png';
+import { Link } from 'react-router-dom';
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
+import { directorsData } from '../../Data/DirectorsData';
+import sinnersLogo from '../../assets/Logo/Sinners logo white.png';
 
-// --- 1. ЗМІНЕНО СТРУКТУРУ ДАНИХ ---
-// Повертаємось до 4-колонної структури, щоб правильно згрупувати секції.
+// Динамічні посилання на режисерів
+const directorLinks = directorsData.map(director => ({
+  text: director.name,
+  path: `/directors/${director.slug}`
+}));
+
+// Структура футера з клікабельними посиланнями
 const footerColumns = [
   {
     title: 'DIRECTORS',
-    links: Array(10).fill('Jessy Terrero'),
+    path: '/directors',
+    links: directorLinks,
   },
   {
     title: 'ON ASSIGNMENT',
-    links: Array(6).fill('Jessy Terrero'),
+    path: '/assignment',
+    // Оновлений текст в колонці 'ON ASSIGNMENT'
+    links: [
+      { text: 'AWARDS', path: '/assignment' },
+      { text: 'CASE STUDIES', path: '/assignment' },
+      { text: 'FEATURES', path: '/assignment' },
+      { text: 'NEWS', path: '/assignment' },
+      { text: 'PROJECTS', path: '/assignment' },
+      { text: 'TESTIMONIALS', path: '/assignment' },
+    ],
   },
   {
     title: 'STUDIO LUX',
+    // Додаємо шлях для заголовка STUDIO LUX
+    path: '/studio',
     subSections: [
       {
         title: 'TABLE TOP DIVISION',
-        links: Array(5).fill('Jessy Terrero'),
+        links: [
+          { text: 'Jessy Terrero', path: '/studio' },
+          { text: 'Jessy Terrero', path: '/studio' },
+          { text: 'Jessy Terrero', path: '/studio' },
+          { text: 'Jessy Terrero', path: '/studio' },
+          { text: 'Jessy Terrero', path: '/studio' },
+        ],
       },
       {
         title: 'POST',
-        links: Array(5).fill('Jessy Terrero'),
+        links: [
+          { text: 'Jessy Terrero', path: '/studio' },
+          { text: 'Jessy Terrero', path: '/studio' },
+          { text: 'Jessy Terrero', path: '/studio' },
+          { text: 'Jessy Terrero', path: '/studio' },
+          { text: 'Jessy Terrero', path: '/studio' },
+        ],
       },
     ],
   },
   {
     title: 'ORIGINALS',
-    subSections: [
-      { title: 'PRODUCTION SERVICES', links: [] },
-      { title: 'MANAGEMENT', links: [] },
-      { title: 'FEATURE FILM PACKAGING', links: [] },
-      { title: 'TEAM', links: [] },
+    path: '/originals',
+    links: [
+      // Виправлено помилку в написанні "SERVICES"
+      { text: 'PRODUCTION SERVICES', path: '/production' },
+      { text: 'MANAGEMENT', path: '/management' },
+      { text: 'FEATURE FILM PACKAGING', path: '/feature' },
+      { text: 'TEAM', path: '/team' },
     ],
   },
 ];
 
-const FooterLink = ({ children }) => (
+// Компонент одного посилання (не змінено)
+const FooterLink = ({ path, text }) => (
   <li>
-    <a href="#" className="font-light text-sm text-gray-400 hover:text-white transition-colors">
-      {children}
-    </a>
+    <Link to={path} className="font-bold text-white text-sm uppercase tracking-widest hover:underline">
+      {text}
+    </Link>
   </li>
 );
 
-// Універсальний компонент для рендеру секцій
-const ColumnSection = ({ title, links }) => (
-  <div className="mb-8">
-    <h3 className="text-xs font-bold uppercase tracking-widest mb-6">{title}</h3>
-    <ul className="space-y-3 list-none p-0 m-0">
-      {links?.map((link, index) => (
-        <FooterLink key={index}>{link}</FooterLink>
-      ))}
-    </ul>
-  </div>
-);
+// Компонент секції колонки (оновлений)
+const ColumnSection = ({ title, links, path }) => {
+  const isOriginals = title === 'ORIGINALS';
 
+  // Єдиний набір класів для заголовка та посилань Originals
+  const originalsClasses = 'font-bold text-white text-sm uppercase tracking-widest hover:underline';
+  const titleClasses = originalsClasses + ' mb-6';
+
+  // Стандартні класи для інших підрозділів
+  const subLinkClasses = 'font-light text-sm text-gray-400 hover:text-white transition-colors';
+
+  return (
+    <div className="mb-8">
+      {path ? (
+        <Link to={path} className={isOriginals ? titleClasses : 'font-bold text-white text-sm uppercase tracking-widest mb-6 hover:underline'}>
+          {title}
+        </Link>
+      ) : (
+        <span className="text-xs font-bold uppercase tracking-widest mb-6 block">{title}</span>
+      )}
+      <ul className={`space-y-3 list-none p-0 m-0 ${isOriginals ? 'mt-4' : ''}`}>
+        {links?.map((link, index) => (
+          isOriginals ? (
+            <li key={index}>
+              <Link to={link.path} className={originalsClasses}>
+                {link.text}
+              </Link>
+            </li>
+          ) : (
+            <li key={index}>
+              <Link to={link.path} className={subLinkClasses}>
+                {link.text}
+              </Link>
+            </li>
+          )
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+// Основний футер (не змінено)
 export default function Footer() {
   return (
     <footer className="bg-black text-white font-sans h-[90vh]">
       <div className="max-w-screen-2xl mx-auto px-16 h-full flex flex-col">
         
-        {/* Верхня частина з логотипом */}
+        {/* Лого */}
         <div className="flex justify-center pt-12 pb-8">
           <img src={sinnersLogo} alt="Sinners Logo" className="h-10 w-auto" />
         </div>
 
-        {/* --- 2. ЗМІНЕНО СІТКУ --- */}
-        {/* Повертаємо 4 колонки і збільшуємо відстань між ними до gap-x-16 */}
+        {/* Колонки футера */}
         <div className="my-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-16">
           {footerColumns.map((col, index) => (
             <div key={index}>
-              {/* Рендеримо головну секцію, якщо вона є */}
-              {col.title && <ColumnSection title={col.title} links={col.links} />}
-              
-              {/* Рендеримо під-секції, якщо вони є */}
+              {col.title && (col.links || col.path) && <ColumnSection title={col.title} links={col.links} path={col.path} />}
               {col.subSections?.map((sub, subIndex) => (
-                <ColumnSection key={subIndex} title={sub.title} links={sub.links} />
+                <ColumnSection key={subIndex} title={sub.title} links={sub.links} path={sub.path} />
               ))}
             </div>
           ))}
         </div>
         
-        {/* Нижня частина з копірайтом */}
+        {/* Соцмережі та копірайт */}
         <div className="border-t border-gray-800 py-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-6">
-
-            {/* --- 3. НИЖНІЙ ЛОГОТИП ВИДАЛЕНО --- */}
-            
             <div className="flex items-center gap-5 text-lg">
               <a href="#" aria-label="Facebook" className="hover:text-gray-300"><FaFacebookF /></a>
               <a href="#" aria-label="Instagram" className="hover:text-gray-300"><FaInstagram /></a>

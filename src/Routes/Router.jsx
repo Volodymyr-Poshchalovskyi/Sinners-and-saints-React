@@ -1,9 +1,9 @@
-// src/routes/router.jsx
 import { Routes, Route } from 'react-router-dom';
 
 // Імпортуємо всі ваші компоненти сторінок
 import Assignment from '../Pages/Assignment';
-import Directors from '../Pages/Directors';
+import Directors from '../Pages/Directors'; // Це тепер буде сторінка-список
+import DirectorPage from '../Components/DirectorPage'; // Ваша нова сторінка-шаблон
 import Feature from '../Pages/Feature';
 import Main from '../Pages/Main';
 import Management from '../Pages/Management';
@@ -18,7 +18,13 @@ export default function AppRouter() {
     <Routes>
       <Route path="/" element={<Main />} />
       <Route path="/assignment" element={<Assignment />} />
+
+      {/* Шлях /directors тепер веде на сторінку-список */}
       <Route path="/directors" element={<Directors />} />
+      
+      {/* Новий динамічний шлях для конкретного режисера */}
+      <Route path="/directors/:directorSlug" element={<DirectorPage />} />
+      
       <Route path="/feature" element={<Feature />} />
       <Route path="/management" element={<Management />} />
       <Route path="/originals" element={<Originals />} />
