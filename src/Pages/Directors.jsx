@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // Додано useState
 import { motion } from 'framer-motion';
 import VideoContainer from '../Components/VideoContainer';
-import PreloaderBanner from '../Components/PreloaderBanner'; // Імпорт залишається
+import PreloaderBanner from '../Components/PreloaderBanner';
+import ScrollProgressBar from '../Components/ScrollProgressBar'; 
 
-// Повний список режисерів
 const directorsData = [
     { name: 'SUPERNOVA', videoSrc: '/video/SHOWREEL SINNERS AND SAINTS 2024_1.mp4' },
     { name: 'CHRISTOPHER SIMS', videoSrc: '/video/SHOWREEL SINNERS AND SAINTS 2024_1.mp4' },
@@ -27,23 +27,40 @@ const textAnimation = {
 };
 
 function Directors() {
-    
+  // 2. Створюємо стан для зберігання індексу поточного відео
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   useEffect(() => {
-    // Ця логіка залишається без змін
     const htmlElement = document.documentElement;
     htmlElement.classList.add('scroll-snap-enabled');
+    
+    // 3. Функція, яка буде викликатись при скролі
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+      // Визначаємо індекс, округлюючи позицію скролу, поділену на висоту екрана
+      const newIndex = Math.round(window.scrollY / windowHeight);
+      setCurrentIndex(newIndex);
+    };
+
+    // Додаємо слухача події скролу
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Прибираємо слухача при розмонтуванні компонента
     return () => {
       htmlElement.classList.remove('scroll-snap-enabled');
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // 1. Визначаємо тексти для банера
   const bannerTitle = "VISIONARY STORYTELLERS. COMMERCIAL REBELS. GLOBAL CREATORS.";
   const bannerDescription = "From award-winning filmmakers to fashion-forward image makers, our directors and hybrid talent deliver world-class content across commercials, music videos, branded series, and global campaigns.";
 
   return (
     <div className="bg-black">
-      {/* 2. Передаємо тексти в компонент банера через пропси */}
+      {/* 4. Рендеримо прогрес-бар і передаємо в нього потрібні пропси */}
+      <ScrollProgressBar currentIndex={currentIndex} totalItems={directorsData.length} />
+
+      
       <PreloaderBanner title={bannerTitle} description={bannerDescription} />
       
       {directorsData.map((director, index) => (

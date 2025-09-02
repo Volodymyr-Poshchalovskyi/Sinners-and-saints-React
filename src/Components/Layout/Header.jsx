@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-// 1. Імпортуємо useLocation для визначення поточного URL
 import { Link, useLocation } from 'react-router-dom';
 import sinnersLogoBlack from '../../assets/Logo/Sinners logo black.png';
 import sinnersLogoWhite from '../../assets/Logo/Sinners logo white.png';
@@ -19,31 +18,39 @@ export default function Header() {
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isNavVisible, setIsNavVisible] = useState(true);
   const lastScrollY = useRef(0);
+  
+  // 1. Додаємо новий стан, щоб відстежувати позицію нагорі сторінки
+  const [isAtTop, setIsAtTop] = useState(true);
 
   const [indicatorStyle, setIndicatorStyle] = useState({
     opacity: 0, left: 0, width: 0,
   });
 
-  // 2. Визначаємо поточний маршрут
   const location = useLocation();
   const isMainPage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
-      // 3. Ігноруємо логіку ховання хедера, якщо ми на головній сторінці
+      const currentScrollY = window.scrollY;
+
+      // 2. Оновлюємо стан isAtTop при кожному скролі
+      setIsAtTop(currentScrollY < 50); // Вважаємо верхом сторінки, якщо скрол менше 50px
+
       if (isMainPage) {
         setIsNavVisible(true);
         return;
       }
       
-      const currentScrollY = window.scrollY;
       setIsNavVisible(currentScrollY < lastScrollY.current || currentScrollY < 100);
       lastScrollY.current = currentScrollY;
     };
 
+    // Встановлюємо початкове значення isAtTop при завантаженні
+    handleScroll();
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMainPage]); // Додаємо isMainPage в залежності, щоб ефект оновлювався при зміні сторінки
+  }, [isMainPage]);
 
   const handleLinkMouseEnter = (e) => {
     const linkElement = e.currentTarget;
@@ -56,9 +63,13 @@ export default function Header() {
     setIndicatorStyle((prevStyle) => ({ ...prevStyle, opacity: 0 }));
   };
 
-  // 4. Головна логіка видимості: якщо це головна сторінка - хедер ЗАВЖДИ видимий.
-  // В іншому випадку - залежить від скролу або наведення миші.
-  const isHeaderVisible = isMainPage ? true : isNavVisible || isHeaderHovered;
+  // 3. Оновлюємо головну логіку видимості
+  // Тепер хедер видимий, якщо:
+  // - це головна сторінка, АБО
+  // - на нього навели курсор, АБО
+  // - навігація видима (скрол вгору) І при цьому ми НЕ на самому верху сторінки
+  const isHeaderVisible = isMainPage ? true : isHeaderHovered;
+
 
   return (
     <header
@@ -98,7 +109,6 @@ export default function Header() {
 
         <nav
           className={`w-full flex justify-center transition-all duration-300 ease-in-out overflow-hidden ${
-             // На головній сторінці навігація також завжди видима
             isNavVisible || isMainPage ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'
           }`}
           onMouseLeave={handleNavMouseLeave}
