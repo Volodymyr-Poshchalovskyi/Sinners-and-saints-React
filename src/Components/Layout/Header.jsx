@@ -36,8 +36,13 @@ export default function Header() {
     location.pathname.startsWith('/directors/') ||
     location.pathname === '/login';
 
-  const isVisible =
-    isHovered || isSpecialPage || (location.pathname === '/directors' && isPreloaderActive);
+// Створюємо масив сторінок з прелоадером
+const preloaderPages = ['/directors', '/originals', '/production', '/management','assignment','/feature'];
+
+const isVisible =
+    isHovered || 
+    isSpecialPage || 
+    (preloaderPages.includes(location.pathname) && isPreloaderActive);
 
   const [indicatorStyle, setIndicatorStyle] = useState({
     opacity: 0,
