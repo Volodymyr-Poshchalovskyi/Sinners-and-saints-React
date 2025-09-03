@@ -49,7 +49,7 @@ const VideoOverlay = ({ title, projectLink }) => {
 
 export default function Assignment() {
   const { isPreloaderActive, setIsPreloaderActive } = useAnimation();
-  const videoURL = "/video/SHOWRE-EL SINNERS AND SAINTS 2024_1.mp4";
+  const videoURL = "/video/SHOWREEL SINNERS AND SAINTS 2024_1.mp4";
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
