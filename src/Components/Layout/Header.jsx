@@ -34,10 +34,11 @@ export default function Header() {
   const isSpecialPage =
     location.pathname === '/' ||
     location.pathname.startsWith('/directors/') ||
-    location.pathname === '/login';
+    location.pathname === '/login' ||
+    location.pathname === '/studio';
 
 // Створюємо масив сторінок з прелоадером
-const preloaderPages = ['/directors', '/originals', '/production', '/management','assignment','/feature'];
+const preloaderPages = ['/directors', '/originals', '/production', '/management','/assignment','/feature'];
 
 const isVisible =
     isHovered || 
