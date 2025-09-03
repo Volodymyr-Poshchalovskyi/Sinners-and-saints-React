@@ -21,10 +21,11 @@ export default function Studio() {
   const displayText = studioData.options[activeOption];
 
   return (
-    // 1. Основний контейнер тепер є flex-контейнером, що розташовує елементи в колонку.
-    <div className="text-white bg-white h-screen flex flex-col">
+    // 1. Змінено text-white на text-black для видимості.
+    // 2. Додано h-full для правильного розтягування в Layout.
+    <div className="text-black bg-white h-full flex flex-col">
       
-      {/* 2. Банер тепер є першим елементом у flex-колонці. Він не буде розтягуватись. */}
+      {/* Контейнер для кнопок вибору та заголовка */}
       <header className="flex-shrink-0">
         <div className="bg-white w-full py-8 mt-28 flex justify-center">
           <div className="flex flex-col items-center text-center w-full px-8">
@@ -54,7 +55,7 @@ export default function Studio() {
         </div>
       </header>
       
-      {/* 3. Контейнер для компонентів йде наступним і займає весь залишковий простір. */}
+      {/* Контейнер для динамічного контенту (TableTop або PostHouse) */}
       <main className="flex-grow min-h-0">
         {componentMap[activeOption]}
       </main>
