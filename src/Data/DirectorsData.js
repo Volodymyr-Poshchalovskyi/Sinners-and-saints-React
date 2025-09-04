@@ -1,5 +1,4 @@
 const placeholderVideo = '/video/SHOWREEL SINNERS AND SAINTS 2024_1.mp4';
-// A temporary photo. Replace with real paths.
 const placeholderPhoto = '/images/director_placeholder.jpg'; 
 
 export const directorsData = [
