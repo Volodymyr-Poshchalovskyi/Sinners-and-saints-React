@@ -1,50 +1,57 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { directorsData } from '../Data/DirectorsData'; 
-import VideoContainer from '../Components/VideoContainer'; // Виправлено шлях
-import Photo from '../assets/Photos/DirectorPhoto.png';
+import VideoContainer from '../Components/VideoContainer';
+import Photo from '../assets/Photos/DirectorPhoto.png'; // Переконайтесь, що шлях до фото правильний
 
-const nameAnimation = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+// --- Новий компонент для одного відео-блоку ---
+const DirectorVideoBlock = ({ video }) => {
+  const [shouldPlay, setShouldPlay] = useState(false);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShouldPlay(entry.isIntersecting);
+      },
+      { threshold: 0.5 }
+    );
+
+    if (videoRef.current) {
+      observer.observe(videoRef.current);
+    }
+
+    return () => {
+      if (videoRef.current) {
+        observer.unobserve(videoRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <section ref={videoRef} className="relative w-full h-[75vh] bg-black">
+      <VideoContainer videoSrc={video.src} shouldPlay={shouldPlay} />
+      <div className="absolute inset-0 z-10 flex items-end justify-center">
+        <div className="text-center text-white pb-24">
+          <p className="text-2xl mb-6 text-shadow">{video.title}</p>
+          <button className="bg-white text-black py-4 px-6 text-xs font-semibold uppercase tracking-wider flex items-center gap-2
+                           transition-transform hover:scale-105">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            Expand Video
+          </button>
+        </div>
+      </div>
+    </section>
+  );
 };
 
+
+// --- Основний компонент сторінки ---
 export default function DirectorPage() {
   const { directorSlug } = useParams();
   const director = directorsData.find(d => d.slug === directorSlug);
-  
-  // Додаємо state для відстеження видимості
-  const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
-  // useRef для доступу до DOM-елемента
-  const videoSectionRef = useRef(null);
-
-  useEffect(() => {
-    // Створюємо Intersection Observer
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // Оновлюємо state, коли елемент стає видимим
-        setShouldPlayVideo(entry.isIntersecting);
-      },
-      {
-        root: null, // viewport
-        rootMargin: '0px',
-        threshold: 0.5, // запускаємо, коли 50% елемента видимі
-      }
-    );
-
-    // Підписуємося на спостереження, якщо елемент існує
-    if (videoSectionRef.current) {
-      observer.observe(videoSectionRef.current);
-    }
-
-    // Очищаємо observer при розмонтуванні компонента
-    return () => {
-      if (videoSectionRef.current) {
-        observer.unobserve(videoSectionRef.current);
-      }
-    };
-  }, []); // Пустий масив залежностей означає, що ефект запуститься лише раз
 
   if (!director) {
     return (
@@ -55,62 +62,46 @@ export default function DirectorPage() {
   }
 
   return (
-    <div className="bg-black text-white">
-      {/* Секція-банер з кнопкою та ім'ям режисера */}
-      <section 
-        className="relative w-full h-screen" 
-        ref={videoSectionRef} // Прив'язуємо ref до секції
-      >
-        <VideoContainer videoSrc={director.videos[0]?.src} shouldPlay={shouldPlayVideo} />
-        <div className="absolute inset-0 z-10 flex flex-col justify-between">
-          <div className="bg-white w-full py-16 mt-28">
-            <div className="relative flex items-center justify-start px-8">
-              {/* Оновлена кнопка "назад" */}
-              <Link 
-                to="/directors" 
-                className="flex items-center justify-center w-12 h-12 border border-black text-black 
-                         hover:bg-black hover:text-white transition-colors 
-                         absolute left-8"
-              >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </Link>
-              {/* Ім'я режисера - центроване */}
-              <h1 className="text-black text-5xl md:text-7xl font-chanel font-semibold uppercase text-center w-full">
-                {director.name}
-              </h1>
-            </div>
-          </div>
-          <div className="text-white text-lg font-light mb-8 p-8 flex flex-col items-center text-center">
-            <p className="mb-4">{director.videos[0]?.title}</p>
-            <button className="bg-white text-black py-3 px-6 text-sm font-semibold uppercase tracking-wider transition-colors duration-300">
-              <span className="flex items-center">
-                <span className="text-xl mr-2">▶</span>
-                EXPAND VIDEO
-              </span>
-            </button>
-          </div>
-        </div>
+    <div className="bg-white">
+      {/* Секція-банер з іменем режисера */}
+      <section className="bg-white text-black h-[40vh] flex items-center justify-center relative pt-20 md:pt-28">
+        <Link 
+          to="/directors" 
+          className="absolute left-8 md:left-20 top-1/2 -translate-y-1/2 flex items-center justify-center 
+                   w-12 h-12 border-2 border-black text-black 
+                   hover:bg-black hover:text-white transition-colors"
+        >
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </Link>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-chanel font-semibold uppercase text-center px-4">
+          {director.name}
+        </h1>
       </section>
 
-      {/* --- */}
+      {/* Секція з відео-блоками */}
+      <div className="bg-black">
+        {director.videos.map((video, index) => (
+          <DirectorVideoBlock key={index} video={video} />
+        ))}
+      </div>
 
       {/* Секція з фото та біографією */}
-      <section className="w-full bg-white text-black py-16">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-center md:gap-16">
-          <div className="w-full md:w-1/2 flex-shrink-0 mb-8 md:mb-0">
+      <section className="w-full bg-white text-black py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
+          <div className="w-full max-w-md md:w-[450px] flex-shrink-0">
             <img 
               src={Photo} 
               alt={director.name} 
-              className="w-full h-auto object-cover" 
+              className="w-full h-auto object-cover aspect-square" 
             />
           </div>
-          <div className="w-full md:w-1/2">
-            <h2 className="text-4xl md:text-5xl font-semibold uppercase mb-4 text-center md:text-left">
+          <div className="w-full md:w-1/2 text-center md:text-left">
+            <h2 className="text-4xl font-chanel font-semibold uppercase mb-6">
               {director.name}
             </h2>
-            <p className="text-sm leading-relaxed text-center md:text-left">
+            <p className="text-sm font-helvetica leading-relaxed">
               {director.bio}
             </p>
           </div>

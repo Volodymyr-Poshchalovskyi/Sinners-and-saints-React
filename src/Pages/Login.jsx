@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Іконка Google для кнопки входу
 const GoogleIcon = () => (
@@ -34,6 +34,17 @@ const Login = () => {
   const [currentTab, setCurrentTab] = useState('SIGN_IN');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  // --- НОВИЙ КОД: Хук для блокування прокрутки ---
+  useEffect(() => {
+    // Коли компонент монтується, блокуємо скрол
+    document.body.style.overflow = 'hidden';
+
+    // Коли компонент демонтується, повертаємо скрол
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []); // Пустий масив означає, що ефект виконається лише раз
 
   // Функція зміни вкладок
   const handleTabChange = (tabName) => {
@@ -145,7 +156,8 @@ const Login = () => {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 mt-14 font-sans p-4">
+    // --- ЗМІНЕНО: додано pt-14 та видалено items-center ---
+    <div className="min-h-screen flex justify-center bg-gray-100 font-sans p-14 mt-28">
       <div className="w-full max-w-xl text-center">
         {/* Заголовок */}
         <h1 className="text-4xl font-semibold text-black mb-8 tracking-wider">ACCOUNT</h1>

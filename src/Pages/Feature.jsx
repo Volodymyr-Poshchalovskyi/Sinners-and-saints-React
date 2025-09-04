@@ -1,5 +1,3 @@
-// src/pages/Feature.js
-
 import React, { useLayoutEffect, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PreloaderBanner from '../Components/PreloaderBanner';
@@ -15,6 +13,8 @@ const nameAnimation = {
 // Дані для сторінки
 const featureData = {
   title: 'FEATURE FILMS & DOCUMENTARIES',
+  // У прикладі HTML текст 'FEATURE FILM PACKAGING', але я залишив дані з вашого компонента.
+  // Ви можете змінити його тут, якщо потрібно.
 };
 
 export default function Feature() {
@@ -27,9 +27,6 @@ export default function Feature() {
 
   useEffect(() => {
     document.body.style.overflow = isPreloaderActive ? 'hidden' : '';
-    if (!isPreloaderActive) {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    }
     return () => {
       document.body.style.overflow = '';
     };
@@ -43,7 +40,7 @@ export default function Feature() {
   const bannerDescription = "From award-winning filmmakers to fashion-forward image makers, our directors and hybrid talent deliver world-class content across commercials, music videos, branded series, and global campaigns.";
 
   return (
-    <div>
+    <div className="bg-black">
       <AnimatePresence>
         {isPreloaderActive && (
           <PreloaderBanner
@@ -54,24 +51,29 @@ export default function Feature() {
         )}
       </AnimatePresence>
 
-      <div className="relative w-full h-screen overflow-hidden">
-        <VideoContainer
-          videoSrc={videoURL}
-          shouldPlay={!isPreloaderActive}
-        />
+      {!isPreloaderActive && (
+        <div className="relative w-full h-screen overflow-hidden">
+          <VideoContainer
+            videoSrc={videoURL}
+            shouldPlay={!isPreloaderActive}
+          />
 
-        {/* Оверлей тільки з заголовком, без кнопки */}
-        <div className="absolute inset-0 z-10 flex items-end justify-center">
-          <motion.h1
-            className="text-white text-4xl sm:text-5xl md:text-6xl font-chanel font-semibold uppercase pb-16 text-center px-4"
-            variants={nameAnimation}
-            initial="hidden"
-            animate={!isPreloaderActive ? "visible" : "hidden"}
-          >
-            {featureData.title}
-          </motion.h1>
+          {/* === ОНОВЛЕНИЙ БЛОК ОВЕРЛЕЮ === */}
+          <div className="absolute top-[80%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-full text-center">
+            <motion.h1
+              className="text-white font-chanel font-normal uppercase
+                         text-4xl sm:text-6xl md:text-[5rem]
+                         tracking-[-0.3rem] md:tracking-[-0.6rem]
+                         transition-opacity duration-500 hover:opacity-50"
+              variants={nameAnimation}
+              initial="hidden"
+              animate="visible"
+            >
+              {featureData.title}
+            </motion.h1>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

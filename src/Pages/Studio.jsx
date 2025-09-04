@@ -18,48 +18,37 @@ const componentMap = {
 
 export default function Studio() {
   const [activeOption, setActiveOption] = useState(Object.keys(studioData.options)[0]);
-  const displayText = studioData.options[activeOption];
+
+  const getTabClass = (option) => {
+    const baseClasses = `bg-transparent border-b-2 py-4 px-12 text-xs font-semibold uppercase 
+                         tracking-wider cursor-pointer transition-all duration-300`;
+    if (activeOption === option) {
+      return `${baseClasses} text-black border-black`;
+    }
+    return `${baseClasses} text-gray-400 border-transparent hover:text-black`;
+  };
 
   return (
-    // 1. Змінено text-white на text-black для видимості.
-    // 2. Додано h-full для правильного розтягування в Layout.
-    <div className="text-black bg-white h-full flex flex-col">
+    // ЗМІНА ТУТ: Додано pt-36 (padding-top) до головного контейнера
+    <div className="bg-white text-black min-h-screen pt-36">
+      {/* Контейнер для табів */}
+      {/* ЗВІДСИ ВИДАЛЕНО mt-36 */}
+      <div className="text-center border-b border-gray-200">
+        {Object.keys(studioData.options).map(option => (
+          <button
+            key={option}
+            onClick={() => setActiveOption(option)}
+            className={getTabClass(option)}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
       
-      {/* Контейнер для кнопок вибору та заголовка */}
-      <header className="flex-shrink-0">
-        <div className="bg-white w-full py-8 mt-28 flex justify-center">
-          <div className="flex flex-col items-center text-center w-full px-8">
-            <div className="flex justify-center space-x-8">
-              {Object.keys(studioData.options).map(option => (
-                <button
-                  key={option}
-                  onClick={() => setActiveOption(option)}
-                  className={`relative text-2xl uppercase tracking-widest font-light transition-all duration-300 group ${activeOption === option ? 'text-black' : 'text-gray-400'}`}
-                >
-                  {option}
-                  <span
-                    className={`absolute bottom-0 left-0 h-0.5 bg-black transition-all duration-300 ease-in-out
-                      ${activeOption === option ? 'w-full' : 'w-0'}`}
-                  ></span>
-                </button>
-              ))}
-            </div>
-            
-            <div className="w-full h-px bg-gray-200 my-6"></div>
-            
-            <p className="text-5xl font-semibold uppercase tracking-widest text-black">
-                {displayText}
-            </p>
-            
-          </div>
-        </div>
-      </header>
-      
-      {/* Контейнер для динамічного контенту (TableTop або PostHouse) */}
-      <main className="flex-grow min-h-0">
+      {/* Контейнер для динамічного контенту */}
+      <main>
         {componentMap[activeOption]}
       </main>
-
     </div>
   );
 }
