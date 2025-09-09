@@ -1,10 +1,11 @@
-import React, { useLayoutEffect, useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+// src/pages/Originals.js
+
+import React, { useLayoutEffect, useEffect } from 'react'; // Видалимо useState та useRef, оскільки їх вже не потрібно тут
 import { AnimatePresence } from 'framer-motion';
 import PreloaderBanner from '../Components/PreloaderBanner';
 import { useAnimation } from '../context/AnimationContext';
 import VideoContainer from '../Components/VideoContainer';
-
+import { Link } from 'react-router-dom';
 
 const originalsData = [
   {
@@ -21,53 +22,22 @@ const originalsData = [
   }
 ];
 
-
-const OriginalsVideoBlock = ({ item }) => {
-  const [shouldPlay, setShouldPlay] = useState(false);
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShouldPlay(entry.isIntersecting);
-      },
-      { threshold: 0.5 }
-    );
-
-    if (videoRef.current) {
-      observer.observe(videoRef.current);
-    }
-
-
-    return () => {
-      if (videoRef.current) {
-        observer.unobserve(videoRef.current);
-      }
-    };
-  }, []);
-
+// Цей компонент залишиться для оверлею
+const OriginalsVideoOverlay = ({ item }) => {
   return (
-    <section ref={videoRef} className="relative w-full h-screen bg-black overflow-hidden">
-      <VideoContainer
-        videoSrc={item.videoSrc}
-        shouldPlay={shouldPlay}
-      />
-
-      <div className="absolute top-[80%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-full text-center">
-        <div className="text-white">
-          <p className="text-2xl mb-6 font-light" style={{textShadow: '0 2px 6px rgba(0,0,0,0.5)'}}>
-            {item.title}
-          </p>
-          <Link to={item.projectLink}>
-            <button className="bg-white text-black py-4 px-10 text-xs font-semibold uppercase tracking-wider
-                             transition-transform hover:scale-105">
-              See Project
-            </button>
-          </Link>
-        </div>
+    <div className="absolute top-[80%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-full text-center">
+      <div className="text-white">
+        <p className="text-2xl mb-6 font-light" style={{textShadow: '0 2px 6px rgba(0,0,0,0.5)'}}>
+          {item.title}
+        </p>
+        <Link to={item.projectLink}>
+          <button className="bg-white text-black py-4 px-10 text-xs font-semibold uppercase tracking-wider
+                           transition-transform hover:scale-105">
+            See Project
+          </button>
+        </Link>
       </div>
-    </section>
+    </div>
   );
 };
 
@@ -81,6 +51,9 @@ export default function Originals() {
 
   useEffect(() => {
     document.body.style.overflow = isPreloaderActive ? 'hidden' : '';
+    if (!isPreloaderActive) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
     return () => {
       document.body.style.overflow = '';
     };
@@ -105,14 +78,19 @@ export default function Originals() {
         )}
       </AnimatePresence>
       
-      {!isPreloaderActive && (
-        <div className="flex flex-col">
- 
-          {originalsData.map((item) => (
-            <OriginalsVideoBlock key={item.id} item={item} />
-          ))}
-        </div>
-      )}
+      {/* Відео тепер завжди в DOM, але не відтворюються, поки прелоадер активний */}
+      <div className="flex flex-col">
+        {originalsData.map((item) => (
+          <section key={item.id} className="relative w-full h-screen bg-black overflow-hidden">
+            <VideoContainer
+              videoSrc={item.videoSrc}
+              // Замінюємо логіку на пропс shouldPlay, як у Production.js
+              shouldPlay={!isPreloaderActive}
+            />
+            <OriginalsVideoOverlay item={item} />
+          </section>
+        ))}
+      </div>
     </div>
   );
 }
