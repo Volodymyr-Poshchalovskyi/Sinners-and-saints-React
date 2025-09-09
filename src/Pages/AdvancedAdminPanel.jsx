@@ -2,7 +2,7 @@
 
 function AdvancedAdminPanel() {
     return ( <div>
-        bebra
+        Adanced AdminPanel
     </div> );
 }
 

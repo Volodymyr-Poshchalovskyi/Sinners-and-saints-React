@@ -3,19 +3,7 @@
 function AdminPanel() {
     return ( <div>
 
-        bebra
-        bebra
-        bebra
-        bebrabebra
-        bebra
-        bebra
-        bebra
-        bebra
-        bebra
-        bebra
-        bebra
-        bebra
-        bebra
+        AdminPanel
     </div> );
 }
 

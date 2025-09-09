@@ -1,4 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
+
+// --- Supabase клієнт ---
+// Ініціалізуємо Supabase один раз поза компонентом
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 
 // Іконка Google для кнопки входу
 const GoogleIcon = () => (
@@ -30,31 +39,57 @@ const GoogleIcon = () => (
 );
 
 const Login = () => {
-  // За замовчуванням активна вкладка SIGN_IN
-  const [currentTab, setCurrentTab] = useState('SIGN_IN');
+  const [currentTab, setCurrentTab] = useState('STAFF'); // Змінено на STAFF за замовчуванням
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  // --- НОВИЙ КОД: Хук для блокування прокрутки ---
+  const [error, setError] = useState(''); // Стан для відображення помилок
+
+  // --- Хук для навігації ---
+  const navigate = useNavigate();
+
+  // --- Ефект для перевірки сесії та блокування скролу ---
   useEffect(() => {
-    // Коли компонент монтується, блокуємо скрол
     document.body.style.overflow = 'hidden';
 
-    // Коли компонент демонтується, повертаємо скрол
+    // Перевіряємо, чи користувач вже увійшов
+    const { data: { subscription } } = supabase.auth.onAuthStateChanged((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        const userEmail = session.user.email;
+        // Клієнтська перевірка на випадок, якщо хтось зайшов з неавторизованого акаунта
+        if (userEmail.endsWith('@sinnersandsaints.la') || userEmail === 'volodymyr.poshchalovskyi@gmail.com') {
+          navigate('/admin/advanced');
+        } else {
+          // Якщо пошта не підходить, одразу виходимо і показуємо помилку
+          supabase.auth.signOut();
+          setError('This email address is not authorized for staff access.');
+        }
+      }
+    });
+
     return () => {
       document.body.style.overflow = 'auto';
+      subscription?.unsubscribe();
     };
-  }, []); // Пустий масив означає, що ефект виконається лише раз
+  }, [navigate]);
 
-  // Функція зміни вкладок
-  const handleTabChange = (tabName) => {
-    setCurrentTab(tabName);
-    // Очищуємо поля при зміні вкладки
-    setEmail('');
-    setPassword('');
+  // --- Обробник входу через Google ---
+  const handleGoogleLogin = async () => {
+    setError(''); // Скидаємо помилку перед новою спробою
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    });
+    if (error) {
+      setError(error.message);
+    }
   };
 
-  // Функція для визначення класів активної/неактивної вкладки
+  const handleTabChange = (tabName) => {
+    setCurrentTab(tabName);
+    setEmail('');
+    setPassword('');
+    setError('');
+  };
+
   const getTabClass = (tabName) => {
     const baseClasses = "py-4 px-8 text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-300 border-b-2";
     if (currentTab === tabName) {
@@ -62,10 +97,8 @@ const Login = () => {
     }
     return `${baseClasses} text-gray-400 border-transparent hover:text-black`;
   };
-
-  // Рендер контенту в залежності від обраної вкладки
+  
   const renderFormContent = () => {
-    // Додаємо ключ для анімації при зміні вкладки
     return (
       <div key={currentTab} className="max-w-sm mx-auto text-center animate-fadeIn">
         {(() => {
@@ -140,11 +173,14 @@ const Login = () => {
                   </div>
                    <button
                     type="button"
+                    onClick={handleGoogleLogin} // Додано обробник
                     className="w-full py-3 mt-4 bg-white text-gray-700 font-semibold text-sm border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
                   >
                     <GoogleIcon />
                     Sign in with Google
                   </button>
+                  {/* Відображення помилки, якщо вона є */}
+                  {error && <p className="text-red-500 text-xs mt-4">{error}</p>}
                 </>
               );
             default:
@@ -156,7 +192,6 @@ const Login = () => {
   };
   
   return (
-    // --- ЗМІНЕНО: додано pt-14 та видалено items-center ---
     <div className="min-h-screen flex justify-center bg-gray-100 font-sans p-14 mt-28">
       <div className="w-full max-w-xl text-center">
         {/* Заголовок */}
@@ -185,3 +220,4 @@ const Login = () => {
 };
 
 export default Login;
+
