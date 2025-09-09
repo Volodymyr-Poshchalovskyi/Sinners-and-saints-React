@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 // --- Supabase клієнт ---
 // Ініціалізуємо Supabase один раз поза компонентом
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 
@@ -52,7 +52,7 @@ const Login = () => {
     document.body.style.overflow = 'hidden';
 
     // Перевіряємо, чи користувач вже увійшов
-    const { data: { subscription } } = supabase.auth.onAuthStateChanged((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         const userEmail = session.user.email;
         // Клієнтська перевірка на випадок, якщо хтось зайшов з неавторизованого акаунта
