@@ -1,4 +1,5 @@
-// /src/Routes/ProtectedRoute.js (трохи спрощено)
+// /src/Routes/ProtectedRoute.jsx
+
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 

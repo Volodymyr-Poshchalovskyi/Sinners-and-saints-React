@@ -1,19 +1,28 @@
-import { useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 
-export default function Layout({ children }) {
+/**
+ * The main layout for the public-facing pages of the website.
+ * It includes a header and a footer. It now uses <Outlet />
+ * from react-router-dom to render its child routes.
+ */
+export default function Layout() {
   const location = useLocation();
-  const shouldHideFooter = location.pathname === '/' || location.pathname === '/login';
+  // The Login page is no longer rendered within this layout,
+  // so the check for '/login' is removed.
+  const shouldHideFooter = location.pathname === '/';
 
   return (
-    // 1. Додаємо flex та flex-col, щоб елементи стали в колонку
     <div className="min-h-screen dark:bg-gray-900 text-black dark:text-white flex flex-col">
       <Header />
-      {/* 2. Додаємо flex-grow, щоб цей блок зайняв увесь доступний простір */}
-      <main className="flex-grow">{children}</main>
+      {/* The {children} prop is replaced with <Outlet /> to work with nested routes */}
+      <main className="flex-grow">
+        <Outlet />
+      </main>
       
       {!shouldHideFooter && <Footer />}
     </div>
   );
 }
+

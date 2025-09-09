@@ -1,8 +1,5 @@
-// src/App.jsx
-
 import { useEffect } from 'react';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
-import Layout from './Components/Layout/Layout';
 import AppRouter from './Routes/Router';
 import { AnimationProvider } from './context/AnimationContext';
 
@@ -17,14 +14,18 @@ const ScrollToTop = () => {
   return null;
 };
 
+/**
+ * The root component of the application.
+ * It sets up the router and global context providers.
+ * The main Layout component has been removed from here and is now
+ * controlled by the AppRouter to allow for multiple layouts.
+ */
 export default function App() {
   return (
     <Router>
       <ScrollToTop />
       <AnimationProvider>
-        <Layout>
-          <AppRouter />
-        </Layout>
+        <AppRouter />
       </AnimationProvider>
     </Router>
   );

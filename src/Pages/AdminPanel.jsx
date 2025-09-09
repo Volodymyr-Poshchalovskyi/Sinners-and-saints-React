@@ -1,3 +1,5 @@
+// src/Pages/AdminPanel.jsx
+
 function AdminPanel() {
     return ( <div>
 
